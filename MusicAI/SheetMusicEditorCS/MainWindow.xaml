@@ -1,0 +1,223 @@
+﻿<Window x:Class="SheetMusicEditorCS.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SheetMusicEditorCS"
+        mc:Ignorable="d"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        Title="MainWindow" Height="676.278" Width="1221.875" SizeChanged="Window_SizeChanged">
+    <Grid Background="#FFD6D6D6">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="256*" />
+            <ColumnDefinition Width="959*" />
+        </Grid.ColumnDefinitions>
+        <Border x:Name="ScoreBorder" BorderBrush="Black" BorderThickness="1" Margin="0,30, 20,20" Grid.ColumnSpan="2">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                <Viewbox x:Name="ScoreView" Loaded="Viewbox_Loaded" MouseEnter="ScoreView_MouseEnter" MouseWheel="ScoreView_MouseWheel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" Stretch="UniformToFill" MouseLeftButtonDown="ScoreView_MouseLeftButtonDown" MouseLeftButtonUp="ScoreView_MouseLeftButtonUp">
+                    <Image x:Name="ScoreImage" Loaded="ScoreImage_Loaded">
+                    </Image>
+                </Viewbox>
+            </ScrollViewer>
+        </Border>
+        <Grid x:Name="MenuDrawer" Background="#FF0F4E7A" HorizontalAlignment="Right" Width="280" MouseEnter="MenuDrawer_MouseEnter" MouseLeave="MenuDrawer_MouseLeave" Grid.Column="1">
+            <DockPanel>
+                <Grid>
+
+                    <Button x:Name="DrawerButton" Height="Auto" Background="#FF532757" BorderBrush="Transparent" Click="MainDrawerButton_Click" Width="21" Grid.ColumnSpan="2" Margin="0,0,-1,0" HorizontalAlignment="Left" Padding="0,4" Grid.IsSharedSizeScope="True">
+                        <materialDesign:PackIcon Kind="MoreVert" Foreground="White" Width="15" Height="32" />
+                    </Button>
+                </Grid>
+
+                <Grid x:Name="Panel" Background="#FF6F017A">
+                    <Grid.RowDefinitions>
+                        <RowDefinition />
+                    </Grid.RowDefinitions>
+                    <Grid Height="20" VerticalAlignment="Top">
+                        <Button x:Name="PinMenuToggle" HorizontalAlignment="Left" Margin="236,5,0,0" VerticalAlignment="Top" Width="15" Height="15" Background="#FF532757" BorderBrush="Black" Padding="0" Click="PinMenuToggle_Click">
+                            <materialDesign:PackIcon Kind="Pin" Foreground="White" Width="10" Height="10" />
+                        </Button>
+                        <Button x:Name="AutoOpenToggle" HorizontalAlignment="Left" Margin="216,5,0,0" VerticalAlignment="Top" Width="15" Height="15" Background="#FF532757" BorderBrush="#FF060606" Padding="0">
+                            <materialDesign:PackIcon Kind="Eye"  Foreground="White" Width="10" Height="10" />
+                        </Button>
+                    </Grid>
+                    <Grid HorizontalAlignment="Left" Height="59" VerticalAlignment="Bottom" Width="261" Background="#FF6F017A">
+                        <Button x:Name="PropertyOptionsButton" Height="45"  Margin="10,5,195,0" OpacityMask="Black" BorderThickness="1,0,1,1" Click="PropertyOptionsButton_Click" Padding="0">
+                            <materialDesign:PackIcon x:Name="PropertyOptionsIcon" Kind="FountainPen" Foreground="White" Width="40" Height="40" />
+                            <Button.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop x:Name="BorderColor1" Color="#FF6F017A" Offset="0" />
+                                    <GradientStop x:Name="BorderColor2" Color="White" Offset="1" />
+                                </LinearGradientBrush>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop x:Name="ButtonColor1" Color="#FF532757" Offset="0.94" />
+                                    <GradientStop x:Name="ButtonColor2" Color="#FF6F017A" Offset="0.253" />
+                                </LinearGradientBrush>
+                            </Button.Background>
+                        </Button>
+                        <Button x:Name="PlaybackOptionsButton" Height="45"  Margin="73,5,132,0" Click="PlaybackOptionsButton_Click" Padding="0">
+                            <materialDesign:PackIcon x:Name="PlaybackButtonIcon" Kind="Play" Foreground="White" Width="40" Height="40" />
+                            <Button.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop x:Name="BorderColor3" Color="#FF6F017A" Offset="0" />
+                                    <GradientStop x:Name="BorderColor4" Color="White" Offset="1" />
+                                </LinearGradientBrush>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop x:Name="ButtonColor3" Color="#FF532757" Offset="0.94" />
+                                    <GradientStop x:Name="ButtonColor4" Color="#FF6F017A" Offset="0.253" />
+                                </LinearGradientBrush>
+                            </Button.Background>
+                        </Button>
+
+                        <Button Height="45"  Margin="134,5,71,0" Padding="0">
+                            <materialDesign:PackIcon x:Name="ScorePropertiesButtonIcon" Kind="Paper" Foreground="White" Width="40" Height="40" />
+                            <Button.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop x:Name="BorderColor5" Color="#FF6F017A" Offset="0" />
+                                    <GradientStop x:Name="BorderColor6" Color="White" Offset="1" />
+                                </LinearGradientBrush>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop x:Name="ButtonColor5" Color="#FF532757" Offset="0.94" />
+                                    <GradientStop x:Name="ButtonColor6" Color="#FF6F017A" Offset="0.253" />
+                                </LinearGradientBrush>
+                            </Button.Background>
+                        </Button>
+                        <Button x:Name="HomeButton" Height="45"  Margin="195,5,10,0" OpacityMask="Black" BorderThickness="1,0,1,1" Click="HomeButton_Click" Padding="0">
+                            <materialDesign:PackIcon x:Name="HomeButtonIcon" Kind="Home" Foreground="White" Width="40" Height="40" />
+                            <Button.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop x:Name="BorderColor7" Color="#FF6F017A" Offset="0" />
+                                    <GradientStop x:Name="BorderColor8" Color="White" Offset="1" />
+                                </LinearGradientBrush>
+                            </Button.BorderBrush>
+                            <Button.Background>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop x:Name="ButtonColor7" Color="#FF532757" Offset="0.94" />
+                                    <GradientStop x:Name="ButtonColor8" Color="#FF6F017A" Offset="0.253" />
+                                </LinearGradientBrush>
+                            </Button.Background>
+                        </Button>
+                    </Grid>
+                    <!-- This is the first menu, menu control> <!-->
+                    <Canvas Margin="0,30,0,46" Background="#FF6F017A" ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        <Grid x:Name="NoteMenu" Height="559" Width="260" Loaded="NoteMenu_Loaded" HorizontalAlignment="Right" Background="#FF6F017A" Panel.ZIndex="2">
+
+                            <DockPanel>
+                                <ScrollViewer HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" Background="#FF6F017A" VerticalScrollBarVisibility="Hidden">
+                                    <StackPanel HorizontalAlignment="Left" Width="251" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+
+                                        <Expander Width="260" VerticalAlignment="Top" IsExpanded="False" HorizontalAlignment="Right" Header="Notes" Margin="0,0,-9,0" Height="Auto" FontWeight="Bold" FontSize="14" Background="#FFC513D6" Foreground="White" BorderBrush="#FFF9DCDC" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                            <Grid Height="Auto">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="50" />
+                                                </Grid.RowDefinitions>
+                                                <Button Height="45"  Margin="0,0,205,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Whole Note">
+                                                    <materialDesign:PackIcon Kind="MusicNoteWhole" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                                <Button Height="45"  Margin="51,0,154,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Half Note">
+                                                    <materialDesign:PackIcon Kind="MusicNoteHalf" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                                <Button Height="45"  Margin="102,0,103,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Quarter Note">
+                                                    <materialDesign:PackIcon Kind="MusicNoteQuarter" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                                <Button Height="45"  Margin="153,0,52,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Eight Note">
+                                                    <materialDesign:PackIcon Kind="MusicNoteEighth" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                                <Button Height="45"  Margin="204,0,1,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Sixteenth Note">
+                                                    <materialDesign:PackIcon Kind="MusicNoteSixteenth" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                            </Grid>
+                                        </Expander>
+                                        <Expander Width="260" VerticalAlignment="Top" IsExpanded="False" HorizontalAlignment="Right" Header="Rests" Margin="0,0,-9,0" Height="Auto" FontWeight="Bold" FontSize="14" Background="#FFC513D6" Foreground="White" BorderBrush="#FFF9DCDC" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                            <Grid Height="Auto">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="50" />
+                                                </Grid.RowDefinitions>
+                                                <Button Height="45"  Margin="0,0,205,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Whole Rest">
+                                                    <materialDesign:PackIcon Kind="MusicRestWhole" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                                <Button Height="45"  Margin="51,0,154,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Half Rest">
+                                                    <materialDesign:PackIcon Kind="MusicRestHalf" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                                <Button Height="45"  Margin="102,0,103,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Quarter Rest">
+                                                    <materialDesign:PackIcon Kind="MusicRestQuarter" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                                <Button Height="45"  Margin="153,0,52,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Eighth Rest">
+                                                    <materialDesign:PackIcon Kind="MusicRestEighth" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                                <Button Height="45"  Margin="204,0,1,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" Padding="0" ToolTip="Sixteenth Rest">
+                                                    <materialDesign:PackIcon Kind="MusicRestSixteenth" Foreground="White" Width="40" Height="40" />
+                                                </Button>
+                                            </Grid>
+                                        </Expander>
+                                        <Expander Width="260" VerticalAlignment="Top" IsExpanded="False" HorizontalAlignment="Right" Header="Styles" Margin="0,0,-9,0" Height="Auto" FontWeight="Bold" FontSize="14" Background="#FFC513D6" Foreground="White" BorderBrush="#FFF9DCDC" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                            <Grid Height="Auto">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="50" />
+                                                </Grid.RowDefinitions>
+                                                <Button Height="45"  Margin="0,0,205,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                                <Button Height="45"  Margin="51,0,154,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                                <Button Height="45"  Margin="102,0,103,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                                <Button Height="45"  Margin="153,0,52,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                                <Button Height="45"  Margin="204,0,1,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                            </Grid>
+                                        </Expander>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </Grid>
+                        <!-- THIS is the second menu - playback><!-->
+                        <Grid x:Name="PlaybackMenu" Height="559" Width="260" HorizontalAlignment="Right">
+
+                            <DockPanel>
+                                <ScrollViewer HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" Background="#FF6F017A" VerticalScrollBarVisibility="Hidden">
+                                    <StackPanel HorizontalAlignment="Left" Width="251" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+
+                                        <Expander Width="260" VerticalAlignment="Top" IsExpanded="False" HorizontalAlignment="Right" Header="ANOTHER" Margin="0,0,-9,0" Height="Auto" FontWeight="Bold" FontSize="14" Background="#FFC513D6" Foreground="White" BorderBrush="#FFF9DCDC" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+                                            <Grid Height="Auto">
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="50" />
+                                                </Grid.RowDefinitions>
+                                                <Button Height="45"  Margin="0,0,205,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                                <Button Height="45"  Margin="51,0,154,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                                <Button Height="45"  Margin="102,0,103,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                                <Button Height="45"  Margin="153,0,52,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                                <Button Height="45"  Margin="204,0,1,0" Background="#FF532757" BorderBrush="#FF532757" Width="45" />
+                                            </Grid>
+                                        </Expander>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </Grid>
+                        <!-- THIS is the Fourth menu - playback><!-->
+                        <Grid x:Name="HomeMenu" Height="559" Width="260" HorizontalAlignment="Right" Background="#FF6F017A" UseLayoutRounding="False">
+
+                            <DockPanel>
+                                <ScrollViewer HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" Background="#FF6F017A" VerticalScrollBarVisibility="Hidden">
+                                    <StackPanel HorizontalAlignment="Left" Width="255" ScrollViewer.VerticalScrollBarVisibility="Hidden">
+
+                                        <Button Height="61" Background="#FFC513D6" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Plus" Foreground="White" Width="60" Height="60" />
+                                        </Button>
+                                        <Button Height="61" Background="#FFC513D6" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Floppy" Foreground="White" Width="60" Height="60" />
+                                        </Button>
+                                        <Button Height="61" Background="#FFC513D6" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left">
+                                            <materialDesign:PackIcon Kind="Folder" Foreground="White" Width="60" Height="60" />
+                                        </Button>
+                                    </StackPanel>
+                                </ScrollViewer>
+                            </DockPanel>
+                        </Grid>
+                    </Canvas>
+                </Grid>
+            </DockPanel>
+        </Grid>
+    </Grid>
+</Window>
