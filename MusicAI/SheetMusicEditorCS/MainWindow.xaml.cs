@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Packaging;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,6 +17,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Windows.Markup;
+using System.Xml;
 
 namespace SheetMusicEditorCS
 {
@@ -27,9 +30,20 @@ namespace SheetMusicEditorCS
         //Drawer variables
         private DispatcherTimer timer;
 
+        private DispatcherTimer timerPreview;
+
         private DispatcherTimer timerProperties;
         private DispatcherTimer timerPlayback;
         private DispatcherTimer timerHome;
+
+        private DispatcherTimer timerSlide;
+        private DispatcherTimer timerFade;
+
+        private DispatcherTimer timerSize;
+        private DispatcherTimer timerOrientation;
+
+        private DispatcherTimer timerPreviewFade;
+        private DispatcherTimer timerListFade;
 
         private double MenuDrawerWidth;
         private bool MainDrawerHidden;
@@ -37,9 +51,18 @@ namespace SheetMusicEditorCS
         private bool PlaybackMenuHidden;
         private bool HomeMenuHidden;
 
+        private bool PreviewMenuHidden;
+        private bool ListMenuHidden;
+
+        private bool utilityMenuHidden;
+        private bool isFaded;
+
         private bool hideHomeMenu;
         private bool hideNoteMenu;
         private bool hidePlaybackMenu;
+
+        private bool hidePreviewMunu;
+        private bool hideListMenu;
 
         private bool canOpenMainDrawer;
 
@@ -51,12 +74,34 @@ namespace SheetMusicEditorCS
         private int scrollOffsetX;
         private int scrollOffsetY;
 
+        private Button oldSizeSelect;
+        private Button newSizeSelect;
+        private double selectLineStep;
+
+        private Button oldOrientationSelect;
+        private Button newOrientationSelect;
+
+        private Button oldPreviewSelect;
+        private Button newPreviewSelect;
+
         private Note.NoteName currNote; //also applies to rests
         private List<Score> ScoreList; //scores are added here when opened and created. Reasoning is that you can have multiple scores open. I need to figure out how to store bitmaps better. PNG temporarily?
 
         public MainWindow()
         {
             InitializeComponent();
+
+            timerPreviewFade = new DispatcherTimer();
+            timerPreviewFade.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            timerPreviewFade.Tick += TimerPreviewFade_Tick;
+
+            timerListFade = new DispatcherTimer();
+            timerListFade.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            timerListFade.Tick += TimerListFade_Tick;
+
+            timerPreview = new DispatcherTimer();
+            timerPreview.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            timerPreview.Tick += TimerPreview_Tick;
 
             timer = new DispatcherTimer();
             timer.Interval = new TimeSpan(0, 0, 0, 0, 10);
@@ -74,6 +119,22 @@ namespace SheetMusicEditorCS
             timerHome.Interval = new TimeSpan(0, 0, 0, 0, 10);
             timerHome.Tick += TimerHome_Tick;
 
+            timerSlide = new DispatcherTimer();
+            timerSlide.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            timerSlide.Tick += TimerSlide_Tick;
+
+            timerFade = new DispatcherTimer();
+            timerFade.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            timerFade.Tick += TimerFade_Tick;
+
+            timerSize = new DispatcherTimer();
+            timerSize.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            timerSize.Tick += TimerSize_Tick;
+
+            timerOrientation = new DispatcherTimer();
+            timerOrientation.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            timerOrientation.Tick += TimerShorten_Tick;
+
             //set menu
             ColourMainDefaultButtons();
             BorderColor1.Color = Color.FromArgb(255, 111, 1, 122);
@@ -86,6 +147,12 @@ namespace SheetMusicEditorCS
             Canvas.SetZIndex(PlaybackMenu, 0);
             Canvas.SetZIndex(HomeMenu, 0);
 
+            Canvas.SetZIndex(ScorePreviewGrid, 1);
+            Canvas.SetZIndex(InstrumentListGrid, 0);
+
+            ListMenuHidden = true;
+            InstrumentListGrid.Opacity = 0;
+
             PlaybackMenuHidden = true;
             HomeMenuHidden = true;
             PlaybackMenu.Opacity = 0;
@@ -96,9 +163,27 @@ namespace SheetMusicEditorCS
             MenuDrawer.Width = 20;
             MainDrawerHidden = true;
 
+            utilityMenuHidden = true;
+            isFaded = true;
+            UtilityCanvas.Opacity = 0.0;
+
+            ColorHomeDefaultButtons();
+            NewMenuButton.Background = new SolidColorBrush(Color.FromArgb(255, 202, 15, 202));
+
             zoomStep = 0;
             scrollOffsetX = 0;
             scrollOffsetY = 0;
+
+            oldSizeSelect = Button9X12;
+            newSizeSelect = Button9X12;
+
+            oldOrientationSelect = PortraitSelectButton;
+            newOrientationSelect = PortraitSelectButton;
+
+            oldPreviewSelect = ScorePreviewButton;
+            newPreviewSelect = ScorePreviewButton;
+
+            PopulateInstrumentOptions();
         }
 
         /// ///////////////////////////////////////////////////LOADING FUNCTIONS////////////////
@@ -148,6 +233,41 @@ namespace SheetMusicEditorCS
             HomeMenuHidden = TriggerFade(HomeMenuHidden, HomeMenu);
         }
 
+        private void TimerSlide_Tick(object sender, EventArgs e)
+        {
+            utilityMenuHidden = TriggerSlide(utilityMenuHidden, UtilityCanvas);
+        }
+
+        private void TimerFade_Tick(object sender, EventArgs e)
+        {
+            isFaded = TriggerUtilityFade(isFaded, UtilityCanvas);
+        }
+
+        private void TimerSize_Tick(object sender, EventArgs e)
+        {
+            MoveSelectLine(SizeSelectLine, newSizeSelect);
+        }
+
+        private void TimerShorten_Tick(object sender, EventArgs e)
+        {
+            MoveSelectLine(OrientationSelectLine, newOrientationSelect);
+        }
+
+        private void TimerPreview_Tick(object sender, EventArgs e)
+        {
+            MoveSelectLine(PreviewSelectLine, newPreviewSelect);
+        }
+
+        private void TimerPreviewFade_Tick(object sender, EventArgs e)
+        {
+            PreviewMenuHidden = TriggerFade(PreviewMenuHidden, ScorePreviewGrid);
+        }
+
+        private void TimerListFade_Tick(object sender, EventArgs e)
+        {
+            ListMenuHidden = TriggerFade(ListMenuHidden, InstrumentListGrid);
+        }
+
         //////////////////////////////////////////////BUTTON EVENTS///////////////////////////////////////////////////////
 
         private void MainDrawerButton_Click(object sender, RoutedEventArgs e)
@@ -175,6 +295,8 @@ namespace SheetMusicEditorCS
             hideNoteMenu = false;
 
             timerProperties.Start();
+
+            if (utilityMenuHidden == false) ShowUtilityMenu();
         }
 
         private void PlaybackOptionsButton_Click(object sender, RoutedEventArgs e)
@@ -197,6 +319,8 @@ namespace SheetMusicEditorCS
             hidePlaybackMenu = false;
 
             timerPlayback.Start();
+
+            if (utilityMenuHidden == false) ShowUtilityMenu();
         }
 
         private void HomeButton_Click(object sender, RoutedEventArgs e)
@@ -219,22 +343,16 @@ namespace SheetMusicEditorCS
             hideHomeMenu = false;
 
             timerHome.Start();
+
+            if (canOpenMainDrawer == true) PinMenuDrawer();
+
+            //open menu hopefully
+            ShowUtilityMenu();
         }
 
         private void PinMenuToggle_Click(object sender, RoutedEventArgs e)
         {
-            //change width of score image
-            //make drawer menu uncolapsable
-            if (canOpenMainDrawer)
-            {
-                ScoreBorder.Margin = new Thickness(0, 30, 280, 20);
-                canOpenMainDrawer = false;
-            }
-            else
-            {
-                ScoreBorder.Margin = new Thickness(0, 30, 20, 20);
-                canOpenMainDrawer = true;
-            }
+            if (utilityMenuHidden) PinMenuDrawer();
         }
 
         private void ScoreView_MouseEnter(object sender, MouseEventArgs e)
@@ -288,6 +406,66 @@ namespace SheetMusicEditorCS
             return result;
         }
 
+        private bool TriggerSlide(bool isHidden, Grid obj)
+        {
+            bool result = isHidden;
+            Thickness thickness = obj.Margin;
+
+            if (result) //start sliding in
+            {
+                thickness.Left -= 15;
+                thickness.Right += 15;
+                obj.Margin = thickness;
+                if (thickness.Right == 280)
+                {
+                    timerSlide.Stop();
+                    result = false;
+                }
+            }
+            else
+            {
+                thickness.Left += 5;
+                thickness.Right -= 5;
+                obj.Margin = thickness;
+                if (thickness.Left == 75)
+                {
+                    timerSlide.Stop();
+                    result = true;
+                }
+            }
+
+            return result;
+        }
+
+        private bool TriggerUtilityFade(bool isFade, Grid obj)
+        {
+            bool result = isFade;
+            if (!isFade) //fade out
+            {
+                obj.Opacity -= 0.1;
+
+                if (obj.Opacity <= 0.0)
+                {
+                    obj.Opacity = 0;
+                    Canvas.SetZIndex(obj, -1);
+                    timerFade.Stop();
+                    result = true;
+                }
+            }
+            else
+            {
+                obj.Opacity += 0.1;
+
+                if (obj.Opacity >= 1.0)
+                {
+                    obj.Opacity = 1;
+                    timerFade.Stop();
+                    result = false;
+                }
+            }
+            return result;
+        }
+
         private bool TriggerFade(bool isHidden, Grid obj)
         {
             bool result = isHidden;
@@ -299,6 +477,8 @@ namespace SheetMusicEditorCS
                     timerHome.Stop();
                     timerProperties.Stop();
                     timerPlayback.Stop();
+                    timerPreviewFade.Stop();
+                    timerListFade.Stop();
                     result = false;
                 }
             }
@@ -312,6 +492,8 @@ namespace SheetMusicEditorCS
                     timerHome.Stop();
                     timerProperties.Stop();
                     timerPlayback.Stop();
+                    timerPreviewFade.Stop();
+                    timerListFade.Stop();
 
                     if (hideHomeMenu)
                     {
@@ -327,6 +509,16 @@ namespace SheetMusicEditorCS
                     {
                         NoteMenuHidden = true;
                         NoteMenu.Opacity = 0;
+                    }
+                    if (hidePreviewMunu)
+                    {
+                        PreviewMenuHidden = true;
+                        ScorePreviewGrid.Opacity = 0;
+                    }
+                    if (hideListMenu)
+                    {
+                        ListMenuHidden = true;
+                        InstrumentListGrid.Opacity = 0;
                     }
 
                     result = false;
@@ -438,11 +630,346 @@ namespace SheetMusicEditorCS
             Point newPoint = e.GetPosition(ScoreView);
             Point translatedPoint = TranslatePoint(newPoint.X, newPoint.Y);
 
-            MessageBox.Show(newPoint.X + " " + newPoint.Y + "\n" + translatedPoint.X + " " + translatedPoint.Y);
+            //MessageBox.Show(newPoint.X + " " + newPoint.Y + "\n" + translatedPoint.X + " " + translatedPoint.Y);
         }
 
         private void ScoreView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+        }
+
+        private void ShowUtilityMenu()
+        {
+            Canvas.SetZIndex(UtilityCanvas, 5);
+            timerSlide.Start();
+            timerFade.Start();
+        }
+
+        private void PinMenuDrawer()
+        {
+            //change width of score image
+            //make drawer menu uncolapsable
+            if (canOpenMainDrawer)
+            {
+                ScoreGrid.Margin = new Thickness(0, 0, 280, 0);
+                canOpenMainDrawer = false;
+            }
+            else
+            {
+                ScoreGrid.Margin = new Thickness(0, 0, 20, 0);
+                canOpenMainDrawer = true;
+            }
+        }
+
+        private void ColorHomeDefaultButtons()
+        {
+            NewMenuButton.Background = new SolidColorBrush(Color.FromArgb(255, 132, 0, 145));
+            SaveMenuButton.Background = new SolidColorBrush(Color.FromArgb(255, 132, 0, 145));
+            OpenMenuButton.Background = new SolidColorBrush(Color.FromArgb(255, 132, 0, 145));
+        }
+
+        private void NewMenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            ColorHomeDefaultButtons();
+            NewMenuButton.Background = new SolidColorBrush(Color.FromArgb(255, 202, 15, 202));
+        }
+
+        private void SaveMenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            ColorHomeDefaultButtons();
+            SaveMenuButton.Background = new SolidColorBrush(Color.FromArgb(255, 202, 15, 202));
+        }
+
+        private void OpenMenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            ColorHomeDefaultButtons();
+            OpenMenuButton.Background = new SolidColorBrush(Color.FromArgb(255, 202, 15, 202));
+        }
+
+        private void MoveSelectLine(Line line, Button newButton)
+        {
+            if (line.X2 < (newButton.Margin.Left + newButton.Width))
+            {
+                line.X2 += selectLineStep;
+                line.X1 += selectLineStep;
+                if (line.X2 >= (newButton.Margin.Left + newButton.Width))
+                {
+                    line.X2 = newButton.Margin.Left + newButton.Width;
+                    line.X1 = newButton.Margin.Left;
+                    timerSize.Stop();
+                    timerOrientation.Stop();
+                    timerPreview.Stop();
+                }
+            }
+            else
+            {
+                line.X2 -= selectLineStep;
+                line.X1 -= selectLineStep;
+                if (line.X2 <= (newButton.Margin.Left + newButton.Width))
+                {
+                    line.X2 = newButton.Margin.Left + newButton.Width;
+                    line.X1 = newButton.Margin.Left;
+                    timerSize.Stop();
+                    timerOrientation.Stop();
+                    timerPreview.Stop();
+                }
+            }
+        }
+
+        private void Button9X12_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldSizeSelect == Button9X12) return;
+            newSizeSelect = Button9X12;
+            selectLineStep = Math.Abs(oldSizeSelect.Margin.Left - newSizeSelect.Margin.Left) / 10;
+            timerSize.Start();
+
+            oldSizeSelect = Button9X12;
+        }
+
+        private void Button85X11_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldSizeSelect == Button85X11) return;
+            newSizeSelect = Button85X11;
+            selectLineStep = Math.Abs(oldSizeSelect.Margin.Left - newSizeSelect.Margin.Left) / 7;
+            timerSize.Start();
+
+            oldSizeSelect = Button85X11;
+        }
+
+        private void Button11X13_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldSizeSelect == Button11X13) return;
+            newSizeSelect = Button11X13;
+            selectLineStep = Math.Abs(oldSizeSelect.Margin.Left - newSizeSelect.Margin.Left) / 7;
+            timerSize.Start();
+
+            oldSizeSelect = Button11X13;
+        }
+
+        private void Button11X14_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldSizeSelect == Button11X14) return;
+            newSizeSelect = Button11X14;
+            selectLineStep = Math.Abs(oldSizeSelect.Margin.Left - newSizeSelect.Margin.Left) / 7;
+            timerSize.Start();
+
+            oldSizeSelect = Button11X14;
+        }
+
+        private void Button11X17_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldSizeSelect == Button11X17) return;
+            newSizeSelect = Button11X17;
+            selectLineStep = Math.Abs(oldSizeSelect.Margin.Left - newSizeSelect.Margin.Left) / 7;
+            timerSize.Start();
+
+            oldSizeSelect = Button11X17;
+        }
+
+        private void PortraitSelectButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldOrientationSelect == PortraitSelectButton) return;
+            newOrientationSelect = PortraitSelectButton;
+            selectLineStep = Math.Abs(oldOrientationSelect.Margin.Left - newOrientationSelect.Margin.Left) / 7;
+            timerOrientation.Start();
+
+            oldOrientationSelect = PortraitSelectButton;
+        }
+
+        private void LandscapeSelectButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldOrientationSelect == LandscapeSelectButton) return;
+            newOrientationSelect = LandscapeSelectButton;
+            selectLineStep = Math.Abs(oldOrientationSelect.Margin.Left - newOrientationSelect.Margin.Left) / 7;
+            timerOrientation.Start();
+
+            oldOrientationSelect = LandscapeSelectButton;
+        }
+
+        private void TitleField_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (TitleField.Text == "Title")
+            {
+                TitleField.Foreground = new SolidColorBrush(Colors.Gray);
+                TitleField.Text = "";
+            }
+        }
+
+        private void TitleField_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (TitleField.Text == "")
+            {
+                TitleField.Foreground = new SolidColorBrush(Colors.LightGray);
+                TitleField.Text = "Title";
+            }
+        }
+
+        private void SubtitleField_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (SubtitleField.Text == "Subtitle")
+            {
+                SubtitleField.Foreground = new SolidColorBrush(Colors.Gray);
+                SubtitleField.Text = "";
+            }
+        }
+
+        private void SubtitleField_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (SubtitleField.Text == "")
+            {
+                SubtitleField.Foreground = new SolidColorBrush(Colors.LightGray);
+                SubtitleField.Text = "Subtitle";
+            }
+        }
+
+        private void ComposerField_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (ComposerField.Text == "Composer")
+            {
+                ComposerField.Foreground = new SolidColorBrush(Colors.Gray);
+                ComposerField.Text = "";
+            }
+        }
+
+        private void ComposerField_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (ComposerField.Text == "")
+            {
+                ComposerField.Foreground = new SolidColorBrush(Colors.LightGray);
+                ComposerField.Text = "Composer";
+            }
+        }
+
+        private void ArrangerField_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (ArrangerField.Text == "Arranger")
+            {
+                ArrangerField.Foreground = new SolidColorBrush(Colors.Gray);
+                ArrangerField.Text = "";
+            }
+        }
+
+        private void ArrangerField_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (ArrangerField.Text == "")
+            {
+                ArrangerField.Foreground = new SolidColorBrush(Colors.LightGray);
+                ArrangerField.Text = "Arranger";
+            }
+        }
+
+        private void LyricistField_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (LyricistField.Text == "Lyricist")
+            {
+                LyricistField.Foreground = new SolidColorBrush(Colors.Gray);
+                LyricistField.Text = "";
+            }
+        }
+
+        private void LyricistField_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (LyricistField.Text == "")
+            {
+                LyricistField.Foreground = new SolidColorBrush(Colors.LightGray);
+                LyricistField.Text = "Lyricist";
+            }
+        }
+
+        private void CopyrightField_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (CopyrightField.Text == "Copyright")
+            {
+                CopyrightField.Foreground = new SolidColorBrush(Colors.Gray);
+                CopyrightField.Text = "\xA9";
+            }
+        }
+
+        private void CopyrightField_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if ((CopyrightField.Text == "") || (CopyrightField.Text == "\xA9"))
+            {
+                CopyrightField.Foreground = new SolidColorBrush(Colors.LightGray);
+                CopyrightField.Text = "Copyright";
+            }
+        }
+
+        private void ScorePreviewButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldPreviewSelect == ScorePreviewButton) return;
+            newPreviewSelect = ScorePreviewButton;
+            selectLineStep = Math.Abs(oldPreviewSelect.Margin.Left - newPreviewSelect.Margin.Left) / 7;
+            timerPreview.Start();
+
+            oldPreviewSelect = ScorePreviewButton;
+
+            Canvas.SetZIndex(ScorePreviewGrid, 1);
+            Canvas.SetZIndex(InstrumentListGrid, 0);
+
+            hideListMenu = true;
+            hidePreviewMunu = false;
+
+            timerPreviewFade.Start();
+        }
+
+        private void InstrumentPreviewButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (oldPreviewSelect == InstrumentPreviewButton) return;
+            newPreviewSelect = InstrumentPreviewButton;
+            selectLineStep = Math.Abs(oldPreviewSelect.Margin.Left - newPreviewSelect.Margin.Left) / 7;
+            timerPreview.Start();
+
+            oldPreviewSelect = InstrumentPreviewButton;
+
+            Canvas.SetZIndex(ScorePreviewGrid, 0);
+            Canvas.SetZIndex(InstrumentListGrid, 1);
+
+            hideListMenu = false;
+            hidePreviewMunu = true;
+
+            timerListFade.Start();
+        }
+
+        private void PopulateInstrumentOptions()
+        {
+            foreach (var item in Enum.GetValues(typeof(Instrument.Instruments)))
+            {
+                Instrument newInstrument = new Instrument((Instrument.Instruments)item, Enum.GetName(typeof(Instrument.Instruments), item));
+                InstrumentOptionsListBox.Items.Add(newInstrument);
+            }
+        }
+
+        private void AddInstrumnentToScoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (InstrumentOptionsListBox.SelectedItem == null) return;
+            Instrument newInstrument = new Instrument((Instrument)InstrumentOptionsListBox.SelectedItem);
+            ScoreInstrumentsListBox.Items.Add(newInstrument);
+
+            //Rename
+        }
+
+        private void RemoveInstrumentFromScoreButton_Click(object sender, RoutedEventArgs e)
+        {
+            ScoreInstrumentsListBox.Items.Remove(ScoreInstrumentsListBox.SelectedItem);
+        }
+
+        private void SortSoreInstrumentListBox(int type)
+        {
+        }
+
+        private void ScoreInstrumentsListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ScoreInstrumentsListBox.SelectedItem == null)
+            {
+                RenameInstrumentTextBox.Text = "";
+                return;
+            }
+            RenameInstrumentTextBox.Text = ((Instrument)ScoreInstrumentsListBox.SelectedItem).instrumentName;
+        }
+
+        private void RenameInstrumentTextBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            ((Instrument)ScoreInstrumentsListBox.SelectedItem).instrumentName = RenameInstrumentTextBox.Text;
+            ScoreInstrumentsListBox.Items.Refresh();
         }
     }
 }

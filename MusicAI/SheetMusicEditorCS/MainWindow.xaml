@@ -6,21 +6,108 @@
         xmlns:local="clr-namespace:SheetMusicEditorCS"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="MainWindow" Height="676.278" Width="1221.875" SizeChanged="Window_SizeChanged">
+        Title="MainWindow" Height="676.278" Width="1221.875" MinHeight="676.278" MinWidth="1221.875" SizeChanged="Window_SizeChanged">
     <Grid Background="#FFD6D6D6">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="256*" />
-            <ColumnDefinition Width="959*" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Border x:Name="ScoreBorder" BorderBrush="Black" BorderThickness="1" Margin="0,30, 20,20" Grid.ColumnSpan="2">
-            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                <Viewbox x:Name="ScoreView" Loaded="Viewbox_Loaded" MouseEnter="ScoreView_MouseEnter" MouseWheel="ScoreView_MouseWheel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" Stretch="UniformToFill" MouseLeftButtonDown="ScoreView_MouseLeftButtonDown" MouseLeftButtonUp="ScoreView_MouseLeftButtonUp">
-                    <Image x:Name="ScoreImage" Loaded="ScoreImage_Loaded">
-                    </Image>
-                </Viewbox>
-            </ScrollViewer>
-        </Border>
-        <Grid x:Name="MenuDrawer" Background="#FF0F4E7A" HorizontalAlignment="Right" Width="280" MouseEnter="MenuDrawer_MouseEnter" MouseLeave="MenuDrawer_MouseLeave" Grid.Column="1">
+
+        <Grid x:Name="UtilityCanvas" Panel.ZIndex="50" Background="White" Margin="75,0,205,0">
+
+            <Grid x:Name="NewMenuGrid">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Label Content="New Score" FontSize="32" Foreground="Gray" FontWeight="Bold" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" VerticalAlignment="Top" Height="62" Width="194" />
+                <Border BorderBrush="#FF6F017A" BorderThickness="1" Height="2" Margin="0,62,-461,0" VerticalAlignment="Top" />
+                <Line X1="465" Y1="600" X2="465" Y2="100" StrokeThickness="1" Stroke="#FFDADADA" HorizontalAlignment="Right" />
+
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="0,64,0,0">
+
+                    <Grid>
+                        <Label Margin="10,0,0,0" Content="Score Information" FontSize="16" Foreground="Gray" FontWeight="Bold" Width="147" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                        <TextBox x:Name="TitleField" Foreground="LightGray" Height="28" Margin="10,34,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Title" GotFocus="TitleField_GotFocus" LostFocus="TitleField_LostFocus" />
+                        <TextBox x:Name="SubtitleField" Foreground="LightGray" Height="29" Margin="10,83,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Subtitle" GotFocus="SubtitleField_GotFocus" LostFocus="SubtitleField_LostFocus" />
+                        <TextBox x:Name="ComposerField" Foreground="LightGray" Height="29" Margin="10,133,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Composer" GotFocus="ComposerField_GotFocus" LostFocus="ComposerField_LostFocus" />
+                        <TextBox x:Name="ArrangerField" Foreground="LightGray" Height="29" Margin="10,183,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Arranger" GotFocus="ArrangerField_GotFocus" LostFocus="ArrangerField_LostFocus" />
+                        <TextBox x:Name="LyricistField" Foreground="LightGray" Height="29" Margin="10,233,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Lyricist" GotFocus="LyricistField_GotFocus" LostFocus="LyricistField_LostFocus" />
+                        <TextBox x:Name="CopyrightField" Foreground="LightGray" Height="29" Margin="10,283,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Copyright" GotFocus="CopyrightField_GotFocus" LostFocus="CopyrightField_LostFocus" />
+                        <Button Content="Create" HorizontalAlignment="Left" Margin="10,518,0,0" Width="147" Background="#FF840091" VerticalAlignment="Top" />
+                        <Label Content="9 X 12" Foreground="Gray" HorizontalAlignment="Left" Margin="10,366,0,0" VerticalAlignment="Top" Width="60" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
+                        <Label Margin="10,332,0,0" Content="Paper Size" FontSize="16" Foreground="Gray" FontWeight="Bold" Width="147" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                        <Label Content="8.5 X 11" Foreground="Gray" HorizontalAlignment="Left" Margin="75,366,0,0" VerticalAlignment="Top" Width="60" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
+                        <Label Content="11 X 13" Foreground="Gray" HorizontalAlignment="Left" Margin="140,366,0,0" VerticalAlignment="Top" Width="60" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
+                        <Label Content="11 X 14" Foreground="Gray" HorizontalAlignment="Left" Margin="205,366,0,0" VerticalAlignment="Top" Width="60" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
+                        <Label Content="11 X 17" Foreground="Gray" HorizontalAlignment="Left" Margin="270,366,0,0" VerticalAlignment="Top" Width="60" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
+                        <Label Margin="10,417,0,0" Content="Paper Orientation" FontSize="16" Foreground="Gray" FontWeight="Bold" Width="147" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" />
+                        <Label Content="Portrait" Foreground="Gray" HorizontalAlignment="Left" Margin="10,451,0,0" VerticalAlignment="Top" Width="75" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
+                        <Label Content="Landscape" Foreground="Gray" HorizontalAlignment="Left" Margin="90,451,0,0" VerticalAlignment="Top" Width="75" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
+                        <Button x:Name="Button85X11" Content="Button" HorizontalAlignment="Left" Margin="75,366,0,0" VerticalAlignment="Top" Width="60" Height="25" Opacity="0" Click="Button85X11_Click" />
+                        <Button x:Name="Button11X13" Content="Button" HorizontalAlignment="Left" Margin="140,366,0,0" VerticalAlignment="Top" Width="60" Height="25" Opacity="0" Click="Button11X13_Click" />
+                        <Button x:Name="Button11X14" Content="Button" HorizontalAlignment="Left" Margin="205,366,0,0" VerticalAlignment="Top" Width="60" Height="25" Opacity="0" Click="Button11X14_Click" />
+                        <Button x:Name="Button11X17" Content="Button" HorizontalAlignment="Left" Margin="270,366,0,0" VerticalAlignment="Top" Width="60" Height="25" Opacity="0" Click="Button11X17_Click" />
+                        <Button x:Name="Button9X12" Content="Button" HorizontalAlignment="Left" Margin="10,366,0,0" VerticalAlignment="Top" Width="60" Height="25" Opacity="0" Click="Button9X12_Click" />
+                        <Line x:Name="SizeSelectLine" X1="10" Y1="390" X2="70" Y2="390" StrokeThickness="2" Stroke="#FF6F017A" HorizontalAlignment="Left" VerticalAlignment="Top" ></Line>
+                        <Line x:Name="OrientationSelectLine" X1="10" Y1="475" X2="85" Y2="475" StrokeThickness="2" Stroke="#FF6F017A" HorizontalAlignment="Left" VerticalAlignment="Top" ></Line>
+                        <Button x:Name="PortraitSelectButton" Content="Button" HorizontalAlignment="Left" Margin="10,451,0,0" VerticalAlignment="Top" Width="75" Height="25" Opacity="0" Click="PortraitSelectButton_Click" />
+                        <Button x:Name="LandscapeSelectButton" Content="Button" HorizontalAlignment="Left" Margin="90,451,0,0" VerticalAlignment="Top" Width="75" Height="25" Opacity="0" Click="LandscapeSelectButton_Click" />
+                    </Grid>
+                </ScrollViewer>
+
+                <Grid Grid.Column="1" Margin="0,64,0,0">
+                    <Label Content="Score Preview" FontSize="16" Foreground="Gray" FontWeight="Bold" Width="135" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="10,0,0,0" />
+                    <Line x:Name="PreviewSelectLine" X1="10" Y1="33" X2="145" Y2="33" StrokeThickness="2" Stroke="#FF6F017A" HorizontalAlignment="Left" VerticalAlignment="Top" ></Line>
+                    <Grid x:Name="ScorePreviewGrid" Margin="0,34,0,0" Background="White">
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="50">
+                            <Viewbox Margin="1,-1,-1,1" />
+                        </Border>
+                    </Grid>
+                    <Grid x:Name="InstrumentListGrid" Margin="0,34,0,0" Background="White">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="175*" />
+                            <ColumnDefinition Width="115*" />
+                            <ColumnDefinition Width="175*" />
+                        </Grid.ColumnDefinitions>
+                        <Label Content="Instrument Options" FontSize="16" Foreground="Gray" Width="156" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="10,10,0,0" />
+
+                        <ComboBox Foreground="Gray" Grid.Column="0" Margin="10,52,10,0" VerticalAlignment="Top" Height="28">
+                            <ComboBoxItem IsSelected="True">Orchestral List</ComboBoxItem>
+                            <ComboBoxItem>Jazz List</ComboBoxItem>
+                        </ComboBox>
+                        <ListBox x:Name="InstrumentOptionsListBox"  Grid.Column="0" Margin="10,85,10,10"  Background="White" BorderBrush="Black" />
+
+                        <ComboBox Foreground="Gray" Grid.Column="2" Margin="10,52,10,0" VerticalAlignment="Top">
+                            <ComboBoxItem IsSelected="True">Orchestral Layout</ComboBoxItem>
+                            <ComboBoxItem>Choral Layout</ComboBoxItem>
+                            <ComboBoxItem>Chamber Layout</ComboBoxItem>
+                        </ComboBox>
+                        <ListBox x:Name="ScoreInstrumentsListBox" Grid.Column="2" Margin="10,85,10,10"  Background="White" BorderBrush="Black" SelectionChanged="ScoreInstrumentsListBox_SelectionChanged" />
+                        <Button x:Name="AddInstrumnentToScoreButton" Content="Add" Grid.Column="1" Margin="10,85,10,0" VerticalAlignment="Top" Click="AddInstrumnentToScoreButton_Click" />
+                        <Button x:Name="RemoveInstrumentFromScoreButton" Content="Remove" Grid.Column="1" Margin="10,122,10,0" VerticalAlignment="Top" Click="RemoveInstrumentFromScoreButton_Click" />
+                        <Label Content="Score's Instruments" FontSize="16" Foreground="Gray" Width="156" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="10,10,0,0" Grid.Column="2" />
+                        <TextBox x:Name="RenameInstrumentTextBox" Foreground="Gray" Grid.Column="1" Height="33" Margin="10,178,10,0" TextWrapping="Wrap" VerticalAlignment="Top" SelectionBrush="#FF6F017A" LostFocus="RenameInstrumentTextBox_LostFocus" />
+                    </Grid>
+                    <Label Content="Instrument List" FontSize="16" Foreground="Gray" FontWeight="Bold" Width="135" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="150,0,0,0" />
+                    <Button x:Name="ScorePreviewButton" Content="Button" HorizontalAlignment="Left" Margin="10,-2,0,0" VerticalAlignment="Top" Width="135" Height="34" Opacity="0" Click="ScorePreviewButton_Click" />
+                    <Button x:Name="InstrumentPreviewButton" Content="Button" HorizontalAlignment="Left" Margin="150,0,0,0" VerticalAlignment="Top" Width="135" Height="34" Opacity="0" Click="InstrumentPreviewButton_Click" />
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <Grid x:Name="ScoreGrid" Margin="0,0,20,0" Background="#FFDADADA">
+            <Border x:Name="ScoreBorder" BorderBrush="Black" BorderThickness="1" Margin="0,30, 0,20" Grid.ColumnSpan="2">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
+                    <Viewbox x:Name="ScoreView" Loaded="Viewbox_Loaded" MouseEnter="ScoreView_MouseEnter" MouseWheel="ScoreView_MouseWheel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" Stretch="UniformToFill" MouseLeftButtonDown="ScoreView_MouseLeftButtonDown" MouseLeftButtonUp="ScoreView_MouseLeftButtonUp">
+                        <Image x:Name="ScoreImage" Loaded="ScoreImage_Loaded">
+                        </Image>
+                    </Viewbox>
+                </ScrollViewer>
+            </Border>
+        </Grid>
+        <Grid x:Name="MenuDrawer" Background="#FF0F4E7A" HorizontalAlignment="Right" Width="280" MouseEnter="MenuDrawer_MouseEnter" MouseLeave="MenuDrawer_MouseLeave" Panel.ZIndex="5">
             <DockPanel>
                 <Grid>
 
@@ -196,19 +283,19 @@
                             </DockPanel>
                         </Grid>
                         <!-- THIS is the Fourth menu - playback><!-->
-                        <Grid x:Name="HomeMenu" Height="559" Width="260" HorizontalAlignment="Right" Background="#FF6F017A" UseLayoutRounding="False">
+                        <Grid x:Name="HomeMenu" Height="559" Width="260" HorizontalAlignment="Right" Background="#FF6F017A" UseLayoutRounding="False" Panel.ZIndex="2">
 
                             <DockPanel>
                                 <ScrollViewer HorizontalAlignment="Stretch" HorizontalScrollBarVisibility="Disabled" Background="#FF6F017A" VerticalScrollBarVisibility="Hidden">
                                     <StackPanel HorizontalAlignment="Left" Width="255" ScrollViewer.VerticalScrollBarVisibility="Hidden">
 
-                                        <Button Height="61" Background="#FFC513D6" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left">
-                                            <materialDesign:PackIcon Kind="Plus" Foreground="White" Width="60" Height="60" />
+                                        <Button x:Name="NewMenuButton" Height="61" Background="#FFCA0FDC" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left" Click="NewMenuButton_Click">
+                                            <materialDesign:PackIcon Kind="Plus" Foreground="White" Width="60" Height="60" Margin="0" />
                                         </Button>
-                                        <Button Height="61" Background="#FFC513D6" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left">
+                                        <Button x:Name="SaveMenuButton" Height="61" Background="#FF840091" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left" Click="SaveMenuButton_Click">
                                             <materialDesign:PackIcon Kind="Floppy" Foreground="White" Width="60" Height="60" />
                                         </Button>
-                                        <Button Height="61" Background="#FFC513D6" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left">
+                                        <Button x:Name="OpenMenuButton" Height="61" Background="#FF840091" BorderBrush="#FF532757" Grid.IsSharedSizeScope="True" Padding="0" Margin="0,0,-5,0" HorizontalContentAlignment="Left" Click="OpenMenuButton_Click">
                                             <materialDesign:PackIcon Kind="Folder" Foreground="White" Width="60" Height="60" />
                                         </Button>
                                     </StackPanel>
