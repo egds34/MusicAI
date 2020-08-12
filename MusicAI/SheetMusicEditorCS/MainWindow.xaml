@@ -34,7 +34,7 @@
                         <TextBox x:Name="ArrangerField" Foreground="LightGray" Height="29" Margin="10,183,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Arranger" GotFocus="ArrangerField_GotFocus" LostFocus="ArrangerField_LostFocus" />
                         <TextBox x:Name="LyricistField" Foreground="LightGray" Height="29" Margin="10,233,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Lyricist" GotFocus="LyricistField_GotFocus" LostFocus="LyricistField_LostFocus" />
                         <TextBox x:Name="CopyrightField" Foreground="LightGray" Height="29" Margin="10,283,50,0" TextWrapping="Wrap" VerticalAlignment="Top" CaretBrush="#FF9C27B0" SelectionBrush="#FF6F017A" FontSize="14" FontWeight="Bold" Text="Copyright" GotFocus="CopyrightField_GotFocus" LostFocus="CopyrightField_LostFocus" />
-                        <Button Content="Create" HorizontalAlignment="Left" Margin="10,518,0,0" Width="147" Background="#FF840091" VerticalAlignment="Top" />
+                        <Button Content="Create" HorizontalAlignment="Left" Margin="10,518,0,0" Width="147" Background="#FF840091" VerticalAlignment="Top" Click="Button_Click" />
                         <Label Content="9 X 12" Foreground="Gray" HorizontalAlignment="Left" Margin="10,366,0,0" VerticalAlignment="Top" Width="60" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
                         <Label Margin="10,332,0,0" Content="Paper Size" FontSize="16" Foreground="Gray" FontWeight="Bold" Width="147" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" />
                         <Label Content="8.5 X 11" Foreground="Gray" HorizontalAlignment="Left" Margin="75,366,0,0" VerticalAlignment="Top" Width="60" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Height="25" />
@@ -59,9 +59,11 @@
                 <Grid Grid.Column="1" Margin="0,64,0,0">
                     <Label Content="Score Preview" FontSize="16" Foreground="Gray" FontWeight="Bold" Width="135" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="10,0,0,0" />
                     <Line x:Name="PreviewSelectLine" X1="10" Y1="33" X2="145" Y2="33" StrokeThickness="2" Stroke="#FF6F017A" HorizontalAlignment="Left" VerticalAlignment="Top" ></Line>
-                    <Grid x:Name="ScorePreviewGrid" Margin="0,34,0,0" Background="White">
-                        <Border BorderBrush="Black" BorderThickness="1" Margin="50">
-                            <Viewbox Margin="1,-1,-1,1" />
+                    <Grid x:Name="ScorePreviewGrid" Margin="0,34,0,0" Background="White" Panel.ZIndex="2">
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="50" Background="#FFECECEC">
+                            <Viewbox Margin="1">
+                                <Image x:Name="PreviewImage" Margin="5" />
+                            </Viewbox>
                         </Border>
                     </Grid>
                     <Grid x:Name="InstrumentListGrid" Margin="0,34,0,0" Background="White">
@@ -74,6 +76,7 @@
                         <Label Content="Instrument Options" FontSize="16" Foreground="Gray" Width="156" Height="34" VerticalAlignment="Top" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Margin="10,10,0,0" />
 
                         <ComboBox Foreground="Gray" Grid.Column="0" Margin="10,52,10,0" VerticalAlignment="Top" Height="28">
+                            <ComboBoxItem>All</ComboBoxItem>
                             <ComboBoxItem IsSelected="True">Orchestral List</ComboBoxItem>
                             <ComboBoxItem>Jazz List</ComboBoxItem>
                         </ComboBox>
@@ -97,12 +100,11 @@
             </Grid>
         </Grid>
 
-        <Grid x:Name="ScoreGrid" Margin="0,0,20,0" Background="#FFDADADA">
-            <Border x:Name="ScoreBorder" BorderBrush="Black" BorderThickness="1" Margin="0,30, 0,20" Grid.ColumnSpan="2">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Auto">
-                    <Viewbox x:Name="ScoreView" Loaded="Viewbox_Loaded" MouseEnter="ScoreView_MouseEnter" MouseWheel="ScoreView_MouseWheel" HorizontalAlignment="Left" VerticalAlignment="Top" Width="100" Height="100" Stretch="UniformToFill" MouseLeftButtonDown="ScoreView_MouseLeftButtonDown" MouseLeftButtonUp="ScoreView_MouseLeftButtonUp">
-                        <Image x:Name="ScoreImage" Loaded="ScoreImage_Loaded">
-                        </Image>
+        <Grid x:Name="ScoreGrid" Margin="0,0,20,0" Background="#FFB2B2B2">
+            <Border x:Name="ScoreBorder" BorderBrush="Black" BorderThickness="1" Margin="0,30, 0,20" Grid.ColumnSpan="2" Background="#FFECECEC">
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                    <Viewbox x:Name="ScoreView" Loaded="Viewbox_Loaded" MouseEnter="ScoreView_MouseEnter" MouseWheel="ScoreView_MouseWheel" MouseLeftButtonDown="ScoreView_MouseLeftButtonDown" MouseLeftButtonUp="ScoreView_MouseLeftButtonUp" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="10000" Width="10000">
+                        <Image x:Name="ScoreImage"></Image>
                     </Viewbox>
                 </ScrollViewer>
             </Border>

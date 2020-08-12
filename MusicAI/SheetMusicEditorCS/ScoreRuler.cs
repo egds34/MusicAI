@@ -15,10 +15,10 @@ namespace SheetMusicEditorCS
         public double topMargin { get; set; }
         public double botMargin { get; set; }
 
-        private double paperHeight;
-        private double paperWidth;
+        public double paperHeight;
+        public double paperWidth;
 
-        public enum PaperSize { S9X12 = 0, S11X17, S11X14 };
+        public enum PaperSize { S9X12 = 0, S85X11, S11X13, S11X17, S11X14 };
 
         public enum Orientation { Portrait, Landscape };
 
@@ -58,6 +58,26 @@ namespace SheetMusicEditorCS
                     botMargin = 48.0;
 
                     paperHeight = 1344.0;
+                    paperWidth = 1056.0;
+                    break;
+
+                case PaperSize.S85X11:
+                    leftMargin = 72.0;
+                    rightMargin = 72.0;
+                    topMargin = 48.0;
+                    botMargin = 48.0;
+
+                    paperHeight = 1056.0;
+                    paperWidth = 816.0;
+                    break;
+
+                case PaperSize.S11X13:
+                    leftMargin = 72.0;
+                    rightMargin = 72.0;
+                    topMargin = 48.0;
+                    botMargin = 48.0;
+
+                    paperHeight = 1248.0;
                     paperWidth = 1056.0;
                     break;
             }

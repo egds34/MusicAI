@@ -86,6 +86,9 @@ namespace SheetMusicEditorCS
 
         private Note.NoteName currNote; //also applies to rests
         private List<Score> ScoreList; //scores are added here when opened and created. Reasoning is that you can have multiple scores open. I need to figure out how to store bitmaps better. PNG temporarily?
+        private Score tempScore; //used for previews, will become a part of the list when the user clicks create
+        private ScoreRuler.PaperSize paperSize;
+        private ScoreRuler.Orientation orientation;
 
         public MainWindow()
         {
@@ -184,6 +187,9 @@ namespace SheetMusicEditorCS
             newPreviewSelect = ScorePreviewButton;
 
             PopulateInstrumentOptions();
+
+            paperSize = ScoreRuler.PaperSize.S9X12;
+            orientation = ScoreRuler.Orientation.Portrait;
         }
 
         /// ///////////////////////////////////////////////////LOADING FUNCTIONS////////////////
@@ -278,6 +284,11 @@ namespace SheetMusicEditorCS
         private void PropertyOptionsButton_Click(object sender, RoutedEventArgs e)
         {
             if (NoteMenuHidden == false) return;
+            ChoosePropertyOptions();
+        }
+
+        private void ChoosePropertyOptions()
+        {
             ColourMainDefaultButtons(); //clear color
 
             BorderColor1.Color = Color.FromArgb(255, 111, 1, 122);
@@ -326,6 +337,8 @@ namespace SheetMusicEditorCS
         private void HomeButton_Click(object sender, RoutedEventArgs e)
         {
             if (HomeMenuHidden == false) return;
+
+            //START UI
             ColourMainDefaultButtons(); //clear color
 
             BorderColor7.Color = Color.FromArgb(255, 111, 1, 122);
@@ -348,6 +361,13 @@ namespace SheetMusicEditorCS
 
             //open menu hopefully
             ShowUtilityMenu();
+            //END UI
+
+            if (tempScore == null) //once created, temp score will no longer be null, or maybe when you leave the home menu. I think home menu makes more sense
+            {
+                tempScore = new Score(new ScoreRuler(paperSize, orientation));
+                UpdatePreview();
+            }
         }
 
         private void PinMenuToggle_Click(object sender, RoutedEventArgs e)
@@ -619,8 +639,8 @@ namespace SheetMusicEditorCS
         private Point TranslatePoint(double x, double y)
         {
             Point result = new Point(0, 0);
-            result.Y = (y / ScoreView.ActualHeight) * 2681.0; //paper size
-            result.X = (x / ScoreView.ActualWidth) * 4000.0;
+            result.Y = (y / ScoreView.ActualHeight) * tempScore.engraver.GetPaperSize().Height; //paper size
+            result.X = (x / ScoreView.ActualWidth) * tempScore.engraver.GetPaperSize().Width;
 
             return result;
         }
@@ -630,7 +650,7 @@ namespace SheetMusicEditorCS
             Point newPoint = e.GetPosition(ScoreView);
             Point translatedPoint = TranslatePoint(newPoint.X, newPoint.Y);
 
-            //MessageBox.Show(newPoint.X + " " + newPoint.Y + "\n" + translatedPoint.X + " " + translatedPoint.Y);
+            MessageBox.Show(newPoint.X + " " + newPoint.Y + "\n" + translatedPoint.X + " " + translatedPoint.Y);
         }
 
         private void ScoreView_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -723,6 +743,10 @@ namespace SheetMusicEditorCS
             timerSize.Start();
 
             oldSizeSelect = Button9X12;
+
+            paperSize = ScoreRuler.PaperSize.S9X12;
+            tempScore.engraver.SetPaper(new ScoreRuler(paperSize, orientation));
+            UpdatePreview();
         }
 
         private void Button85X11_Click(object sender, RoutedEventArgs e)
@@ -733,6 +757,10 @@ namespace SheetMusicEditorCS
             timerSize.Start();
 
             oldSizeSelect = Button85X11;
+
+            paperSize = ScoreRuler.PaperSize.S85X11;
+            tempScore.engraver.SetPaper(new ScoreRuler(paperSize, orientation));
+            UpdatePreview();
         }
 
         private void Button11X13_Click(object sender, RoutedEventArgs e)
@@ -743,6 +771,10 @@ namespace SheetMusicEditorCS
             timerSize.Start();
 
             oldSizeSelect = Button11X13;
+
+            paperSize = ScoreRuler.PaperSize.S11X13;
+            tempScore.engraver.SetPaper(new ScoreRuler(paperSize, orientation));
+            UpdatePreview();
         }
 
         private void Button11X14_Click(object sender, RoutedEventArgs e)
@@ -753,6 +785,10 @@ namespace SheetMusicEditorCS
             timerSize.Start();
 
             oldSizeSelect = Button11X14;
+
+            paperSize = ScoreRuler.PaperSize.S11X14;
+            tempScore.engraver.SetPaper(new ScoreRuler(paperSize, orientation));
+            UpdatePreview();
         }
 
         private void Button11X17_Click(object sender, RoutedEventArgs e)
@@ -763,6 +799,10 @@ namespace SheetMusicEditorCS
             timerSize.Start();
 
             oldSizeSelect = Button11X17;
+
+            paperSize = ScoreRuler.PaperSize.S11X17;
+            tempScore.engraver.SetPaper(new ScoreRuler(paperSize, orientation));
+            UpdatePreview();
         }
 
         private void PortraitSelectButton_Click(object sender, RoutedEventArgs e)
@@ -773,6 +813,10 @@ namespace SheetMusicEditorCS
             timerOrientation.Start();
 
             oldOrientationSelect = PortraitSelectButton;
+
+            orientation = ScoreRuler.Orientation.Portrait;
+            tempScore.engraver.SetPaper(new ScoreRuler(paperSize, orientation));
+            UpdatePreview();
         }
 
         private void LandscapeSelectButton_Click(object sender, RoutedEventArgs e)
@@ -783,6 +827,10 @@ namespace SheetMusicEditorCS
             timerOrientation.Start();
 
             oldOrientationSelect = LandscapeSelectButton;
+
+            orientation = ScoreRuler.Orientation.Landscape;
+            tempScore.engraver.SetPaper(new ScoreRuler(paperSize, orientation));
+            UpdatePreview();
         }
 
         private void TitleField_GotFocus(object sender, RoutedEventArgs e)
@@ -968,8 +1016,29 @@ namespace SheetMusicEditorCS
 
         private void RenameInstrumentTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
+            if (ScoreInstrumentsListBox.SelectedItem == null) return;
             ((Instrument)ScoreInstrumentsListBox.SelectedItem).instrumentName = RenameInstrumentTextBox.Text;
             ScoreInstrumentsListBox.Items.Refresh();
+        }
+
+        private void UpdatePaperSize()
+        {
+            tempScore.engraver.SetPaper(new ScoreRuler(paperSize, orientation));
+        }
+
+        private void UpdatePreview()
+        {
+            PreviewImage.Source = tempScore.engraver.GetScoreBitmap();
+            GC.Collect(2);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            ScoreImage.Source = tempScore.engraver.GetScoreBitmap();
+            imageWidthOffset = ScoreBorder.ActualWidth / 10.0;
+            imageHeightOffset = ScoreBorder.ActualHeight / 10.0;
+
+            ChoosePropertyOptions();
         }
     }
 }

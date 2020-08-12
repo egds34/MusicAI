@@ -13,7 +13,7 @@ namespace SheetMusicEditorCS
     {
         public LinkedList<Instrument> InstrumentList;
 
-        private Engraver engraver;
+        public Engraver engraver;
 
         private Thickness margins;
         private String title;
@@ -29,21 +29,9 @@ namespace SheetMusicEditorCS
 
         public int numMeasures;
 
-        public double paperHeight;
-        public double paperWidth;
-
-        private Score(Thickness margins, String title, String subTitle, String composer, String arranger)
+        public Score(ScoreRuler paper)
         {
-            engraver = new Engraver();
-
-            this.margins = margins;
-            this.title = title;
-            this.subTitle = subTitle;
-            this.composer = composer;
-            this.arranger = arranger;
-
-            paperHeight = 1123;
-            paperWidth = 794;
+            engraver = new Engraver(paper);
         }
 
         ~Score()
