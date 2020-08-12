@@ -195,11 +195,11 @@ namespace SheetMusicEditorCS
         /// ///////////////////////////////////////////////////LOADING FUNCTIONS////////////////
         private void ScoreImage_Loaded(object sender, RoutedEventArgs e)
         {
-            BitmapImage bm = new BitmapImage();
-            bm.BeginInit();
-            bm.UriSource = new Uri(@"C:\\Users\\Christiana\\source\\repos\\SoundGenerationLearning\\SoundGenerationLearning\\image1.jpg");
-            bm.EndInit();
-            ScoreImage.Source = bm;
+            //BitmapImage bm = new BitmapImage();
+            //bm.BeginInit();
+            //bm.UriSource = new Uri(@"C:\\Users\\Christiana\\source\\repos\\SoundGenerationLearning\\SoundGenerationLearning\\image1.jpg");
+            //bm.EndInit();
+            //ScoreImage.Source = bm;
 
             imageWidthOffset = ScoreBorder.ActualWidth / 10.0;
             imageHeightOffset = ScoreBorder.ActualHeight / 10.0;
@@ -618,11 +618,11 @@ namespace SheetMusicEditorCS
                 if (zoomStep > 0) ZoomOut();
                 if (zoomStep < 0) ZoomIn();
             }
-            imageWidthOffset = ScoreBorder.ActualWidth / 10.0;
-            imageHeightOffset = ScoreBorder.ActualHeight / 10.0;
+            imageWidthOffset = tempScore.engraver.GetPaperSize().Width * 5 / 10.0;
+            imageHeightOffset = tempScore.engraver.GetPaperSize().Height / 10.0;
 
-            ScoreView.Width = ScoreBorder.ActualWidth;
-            ScoreView.Height = ScoreBorder.ActualHeight;
+            //ScoreView.Width = ScoreBorder.ActualWidth;
+            //ScoreView.Height = ScoreBorder.ActualHeight;
 
             while (zoomStep != previousStep)
             {
@@ -648,7 +648,7 @@ namespace SheetMusicEditorCS
         private void ScoreView_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             Point newPoint = e.GetPosition(ScoreView);
-            Point translatedPoint = TranslatePoint(newPoint.X, newPoint.Y);
+            Point translatedPoint = TranslatePoint(newPoint.X * 5, newPoint.Y);
 
             MessageBox.Show(newPoint.X + " " + newPoint.Y + "\n" + translatedPoint.X + " " + translatedPoint.Y);
         }
@@ -1032,13 +1032,65 @@ namespace SheetMusicEditorCS
             GC.Collect(2);
         }
 
+        /// <summary>
+        /// Adds 2 grid columns. One that is the width of the page (acts as a sort of place holder) and one that represents the space between pages
+        /// pages go in order of the following equation: pg # = column / 2
+        /// </summary>
+        private void AddScorePage()
+        {
+            int previousStep = zoomStep;
+            while (zoomStep != 0)
+            {
+                if (zoomStep > 0) ZoomOut();
+                if (zoomStep < 0) ZoomIn();
+            }
+
+            ++numPages;
+
+            ColumnDefinition c1 = new ColumnDefinition();
+            c1.Width = new GridLength(10, GridUnitType.Pixel); //check here first
+            ColumnDefinition c2 = new ColumnDefinition();
+            c2.Width = new GridLength(tempScore.engraver.GetPaperSize().Width, GridUnitType.Star);
+
+            ScoreView.Height = tempScore.engraver.GetPaperSize().Height;
+            ScoreView.Width = (tempScore.engraver.GetPaperSize().Width * numPages) + (numPages * 10);
+
+            ScoreView.ColumnDefinitions.Add(c1);
+            ScoreView.ColumnDefinitions.Add(c2);
+
+            Image image = new Image();
+            image.Stretch = Stretch.Fill;
+            image.Source = tempScore.engraver.GetScoreBitmap();
+            Grid.SetColumn(image, (numPages * 2) - 1);
+            ScoreView.Children.Add(image);
+
+            imageWidthOffset = ((tempScore.engraver.GetPaperSize().Width * numPages) + (numPages * 10)) / 10.0;
+            imageHeightOffset = tempScore.engraver.GetPaperSize().Height / 10.0;
+
+            while (zoomStep != previousStep)
+            {
+                if (zoomStep > previousStep) ZoomOut();
+                if (zoomStep < previousStep) ZoomIn();
+            }
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ScoreImage.Source = tempScore.engraver.GetScoreBitmap();
-            imageWidthOffset = ScoreBorder.ActualWidth / 10.0;
-            imageHeightOffset = ScoreBorder.ActualHeight / 10.0;
+            ScoreView.ColumnDefinitions.Clear();
+            ScoreView.Children.Clear();
+            numPages = 0;
 
-            ChoosePropertyOptions();
+            AddScorePage();
+
+            ChoosePropertyOptions(); //take away the main menu
+        }
+
+        private int numPages = 0; // this will never be used in reality. everytime we add a page, we get the number of pages from the score itself. This makes it so that I can dynamically add pages to multiple scores and keep track of them
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            //test
+            AddScorePage();
         }
     }
 }

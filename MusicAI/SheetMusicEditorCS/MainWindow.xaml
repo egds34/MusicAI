@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:SheetMusicEditorCS"
         mc:Ignorable="d"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        Title="MainWindow" Height="676.278" Width="1221.875" MinHeight="676.278" MinWidth="1221.875" SizeChanged="Window_SizeChanged">
+        Title="MainWindow" Height="685.278" Width="1221.875" MinHeight="676.278" MinWidth="1221.875" SizeChanged="Window_SizeChanged">
     <Grid Background="#FFD6D6D6">
         <Grid.ColumnDefinitions>
             <ColumnDefinition />
@@ -53,6 +53,7 @@
                         <Line x:Name="OrientationSelectLine" X1="10" Y1="475" X2="85" Y2="475" StrokeThickness="2" Stroke="#FF6F017A" HorizontalAlignment="Left" VerticalAlignment="Top" ></Line>
                         <Button x:Name="PortraitSelectButton" Content="Button" HorizontalAlignment="Left" Margin="10,451,0,0" VerticalAlignment="Top" Width="75" Height="25" Opacity="0" Click="PortraitSelectButton_Click" />
                         <Button x:Name="LandscapeSelectButton" Content="Button" HorizontalAlignment="Left" Margin="90,451,0,0" VerticalAlignment="Top" Width="75" Height="25" Opacity="0" Click="LandscapeSelectButton_Click" />
+                        <Button Content="TEST" HorizontalAlignment="Left" Margin="232,518,0,0" VerticalAlignment="Top" Width="74" Click="Button_Click_1" />
                     </Grid>
                 </ScrollViewer>
 
@@ -102,10 +103,11 @@
 
         <Grid x:Name="ScoreGrid" Margin="0,0,20,0" Background="#FFB2B2B2">
             <Border x:Name="ScoreBorder" BorderBrush="Black" BorderThickness="1" Margin="0,30, 0,20" Grid.ColumnSpan="2" Background="#FFECECEC">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
-                    <Viewbox x:Name="ScoreView" Loaded="Viewbox_Loaded" MouseEnter="ScoreView_MouseEnter" MouseWheel="ScoreView_MouseWheel" MouseLeftButtonDown="ScoreView_MouseLeftButtonDown" MouseLeftButtonUp="ScoreView_MouseLeftButtonUp" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Left" Height="10000" Width="10000">
-                        <Image x:Name="ScoreImage"></Image>
-                    </Viewbox>
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch">
+                    <StackPanel Orientation="Horizontal">
+                        <Grid x:Name="ScoreView" Loaded="Viewbox_Loaded" MouseEnter="ScoreView_MouseEnter" MouseWheel="ScoreView_MouseWheel" MouseLeftButtonDown="ScoreView_MouseLeftButtonDown" MouseLeftButtonUp="ScoreView_MouseLeftButtonUp" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto" HorizontalAlignment="Center">
+                        </Grid>
+                    </StackPanel>
                 </ScrollViewer>
             </Border>
         </Grid>
